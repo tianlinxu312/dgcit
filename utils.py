@@ -144,7 +144,8 @@ def test_statistics(psy_x_i, psy_y_i, phi_x_i, phi_y_i, t_b, std_b, j):
 
 
 def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000, train_writer=None,
-          current_iters=0, nstd=1.0, z_dist='gaussian', x_dims=1, y_dims=1, a_x=0.05, M=500, k=2, var_idx=1):
+          current_iters=0, nstd=1.0, z_dist='gaussian', x_dims=1, y_dims=1, a_x=0.05, M=500, k=2,
+          var_idx=1, b=30):
     # generate samples x, y, z
     # arguments: size, sType='CI', dx=1, dy=1, dz=20, nstd=1, fixed_function='linear',
     # debug=False, normalize=True, seed=None, dist_z='gaussian'
@@ -320,7 +321,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
     gy_optimiser = tf.keras.optimizers.Adam(lr, beta_1=0.5, clipnorm=gen_clipping_norm, clipvalue=gen_clipping_val)
     dy_optimiser = tf.keras.optimizers.Adam(lr, beta_1=0.5, clipnorm=w_clipping_norm, clipvalue=w_clipping_val)
 
-    @tf.function
+    #@tf.function
     def x_update_d(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
@@ -347,7 +348,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         d_grads = disc_tape.gradient(disc_loss, discriminator_x.trainable_variables)
         dx_optimiser.apply_gradients(zip(d_grads, discriminator_x.trainable_variables))
 
-    @tf.function
+    #@tf.function
     def x_update_g(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
@@ -371,7 +372,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         gx_optimiser.apply_gradients(zip(generator_grads, generator_x.trainable_variables))
         return gen_loss
 
-    @tf.function
+    #@tf.function
     def y_update_d(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
@@ -397,7 +398,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         d_grads = disc_tape.gradient(disc_loss, discriminator_y.trainable_variables)
         dy_optimiser.apply_gradients(zip(d_grads, discriminator_y.trainable_variables))
 
-    @tf.function
+    #@tf.function
     def y_update_g(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
@@ -425,7 +426,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
     phi_x_all = []
     psy_y_all = []
     phi_y_all = []
-    test_samples = 30
+    test_samples = b
     test_size = int(n/k)
 
     for batched_trainingset, batched_testset in data_k:
@@ -495,7 +496,6 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         f1 = cit_gan.CharacteristicFunction(M, x_dims, z_dim, test_size)
         f2 = cit_gan.CharacteristicFunction(M, y_dims, z_dim, test_size)
         for i in range(test_samples):
-            print(i)
             phi_x = tf.reduce_mean(f1.call(x_samples, z), axis=1)
             phi_y = tf.reduce_mean(f2.call(y_samples, z), axis=1)
             psy_x = tf.squeeze(f1.call(x, z))
@@ -749,7 +749,7 @@ def gcit_sinkhorn(n=1000, z_dim=100, simulation='type1error', statistic="rdc", b
     scaling_coef = 1.0
     sinkhorn_eps = 0.8
     sinkhorn_l = 30
-    generator = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, batch_size)
+    generator = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, x_dims, batch_size)
     discriminator = cit_gan.WGanDiscriminator(n, z_dim, h_dims, x_dims, batch_size)
 
     gen_clipping_val = 0.5
@@ -932,8 +932,8 @@ def rcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000, 
     # create instance of G & D
     lr = 1e-4
     # input_dims = x_train.shape[1]
-    f_x = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, batch_size)
-    f_y = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, batch_size)
+    f_x = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, x_dims, batch_size)
+    f_y = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, x_dims, batch_size)
 
     gen_clipping_val = 0.5
     gen_clipping_norm = 1.0

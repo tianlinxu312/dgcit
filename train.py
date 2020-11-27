@@ -16,20 +16,21 @@ np.random.seed(42)
 
 parser = argparse.ArgumentParser(description='cit-gan')
 parser.add_argument('-m', '--model', type=str, default='dgcit', choices=['dgcit', 'gcit', 'rcit'])
-parser.add_argument('-t', '--test', type=str, default='type1error', choices=['type1error', 'power', 'ccle', 'brain'])
-parser.add_argument('-n', '--n_samples', type=int, default=100)
-parser.add_argument('-bs', '--batch_size', type=int, default=8)
+parser.add_argument('-t', '--test', type=str, default='power', choices=['type1error', 'power', 'ccle', 'brain'])
+parser.add_argument('-n', '--n_samples', type=int, default=501)
+parser.add_argument('-bs', '--batch_size', type=int, default=64)
 parser.add_argument('-nt', '--n_tests', type=int, default=500) # number of p_values
-parser.add_argument('-ni', '--n_iters', type=int, default=10) # number of iterations to train GANs
-parser.add_argument('-dx', '--x_dims', type=int, default=10)
-parser.add_argument('-dy', '--y_dims', type=int, default=10)
-parser.add_argument('-dz', '--z_dims', type=int, default=200)
+parser.add_argument('-ni', '--n_iters', type=int, default=1000) # number of iterations to train GANs
+parser.add_argument('-dx', '--x_dims', type=int, default=1)
+parser.add_argument('-dy', '--y_dims', type=int, default=1)
+parser.add_argument('-dz', '--z_dims', type=int, default=100)
 parser.add_argument('-estd', '--eps_std', type=float, default=0.5)
 parser.add_argument('-zd', '--z_dist', type=str, default='gaussian', choices=['gaussian', 'laplace'])
-parser.add_argument('-ax', '--alpha_x', type=float, default=0.05) # alpha before x in H1
+parser.add_argument('-ax', '--alpha_x', type=float, default=0.9) # alpha before x in H1
 parser.add_argument('-zs', '--z_scheme', type=int, default=[50])
 parser.add_argument('-mv', '--m_value', type=int, default=100)
-parser.add_argument('-k', '--n_k', type=int, default=2)
+parser.add_argument('-k', '--n_k', type=int, default=3)
+parser.add_argument('-b', '--b_b', type=int, default=100)
 args = parser.parse_args()
 
 
@@ -54,6 +55,7 @@ def main():
     alpha_x = args.alpha_x
     m_value = args.m_value
     k_value = args.n_k
+    b_value = args.b_b
 
     saved_file = "{}-{}{}-{}-{}".format(model, datetime.now().strftime("%h"), datetime.now().strftime("%d"),
                                         datetime.now().strftime("%H"), datetime.now().strftime("%M"))
@@ -79,7 +81,7 @@ def main():
                     p_value = utils.dgcit(n=sample_size, z_dim=z_dim, simulation=test, batch_size=batch_size,
                                           n_iter=n_iters, train_writer=train_writer, current_iters=test_count * n_test,
                                           nstd=eps_std, z_dist=dist_z, x_dims=dx, y_dims=dy, a_x=alpha_x, M=m_value,
-                                          k=k_value)
+                                          k=k_value, b=b_value)
 
                 elif model == 'gcit':
                     p_value = utils.gcit_sinkhorn(n=sample_size, z_dim=z_dim, simulation=test, statistic="rdc",
@@ -140,7 +142,7 @@ def main():
                         p_value = utils.dgcit(n=sample_size, z_dim=z_dim, simulation=test, batch_size=batch_size,
                                               n_iter=n_iters, train_writer=train_writer,
                                               current_iters=test_count * n_test, nstd=eps_std, z_dist=dist_z,
-                                              x_dims=dx, y_dims=dy, a_x=alpha_x, M=m_value, k=k_value)
+                                              x_dims=dx, y_dims=dy, a_x=alpha_x, M=m_value, k=k_value, b=b_value)
                     elif model == 'gcit':
                         p_value = utils.gcit_sinkhorn(n=sample_size, z_dim=z_dim, simulation=test, statistic="rdc",
                                                       batch_size=batch_size, n_iter=n_iters,
@@ -194,7 +196,7 @@ def main():
         if model == 'dgcit':
             p_value = utils.dgcit(n=sample_size, simulation=test, batch_size=batch_size, n_iter=n_iters,
                                   train_writer=train_writer, nstd=eps_std, z_dist=dist_z, x_dims=dx, y_dims=dy,
-                                  a_x=alpha_x, M=m_value, k=k_value)
+                                  a_x=alpha_x, M=m_value, k=k_value, b=b_value)
             print(p_value)
 
         elif model == 'gcit':
@@ -213,7 +215,7 @@ def main():
             if model == 'dgcit':
                 p_value = utils.dgcit(n=sample_size, simulation=test, batch_size=batch_size, n_iter=n_iters,
                                       train_writer=train_writer, nstd=eps_std, z_dist=dist_z, x_dims=dx,
-                                      y_dims=dy, a_x=alpha_x, M=m_value, k=k_value, var_idx=var)
+                                      y_dims=dy, a_x=alpha_x, M=m_value, k=k_value, var_idx=var, b=b_value)
                 p_vals.append(p_value)
                 print('P value {} for {} dataset {} for current variable number {}'.format(p_value, test, model, var))
 
