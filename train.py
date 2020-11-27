@@ -10,7 +10,7 @@ import cit_gan
 import decimal
 import gan_utils
 import argparse
-tf.keras.backend.set_floatx('float64')
+tf.keras.backend.set_floatx('float32')
 tf.random.set_seed(42)
 np.random.seed(42)
 
