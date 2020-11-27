@@ -321,7 +321,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
     gy_optimiser = tf.keras.optimizers.Adam(lr, beta_1=0.5, clipnorm=gen_clipping_norm, clipvalue=gen_clipping_val)
     dy_optimiser = tf.keras.optimizers.Adam(lr, beta_1=0.5, clipnorm=w_clipping_norm, clipvalue=w_clipping_val)
 
-    #@tf.function
+    @tf.function
     def x_update_d(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
@@ -348,7 +348,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         d_grads = disc_tape.gradient(disc_loss, discriminator_x.trainable_variables)
         dx_optimiser.apply_gradients(zip(d_grads, discriminator_x.trainable_variables))
 
-    #@tf.function
+    @tf.function
     def x_update_g(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
@@ -372,7 +372,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         gx_optimiser.apply_gradients(zip(generator_grads, generator_x.trainable_variables))
         return gen_loss
 
-    #@tf.function
+    @tf.function
     def y_update_d(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
@@ -398,7 +398,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         d_grads = disc_tape.gradient(disc_loss, discriminator_y.trainable_variables)
         dy_optimiser.apply_gradients(zip(d_grads, discriminator_y.trainable_variables))
 
-    #@tf.function
+    @tf.function
     def y_update_g(real_x, real_x_p, real_z, real_z_p, v, v_p):
         gen_inputs = tf.concat([real_z, v], axis=1)
         gen_inputs_p = tf.concat([real_z_p, v_p], axis=1)
