@@ -67,10 +67,10 @@ def generate_samples_random(size=1000, sType='CI', dx=1, dy=1, dz=20, nstd=0.05,
 
     Ax = np.random.rand(dz, dx)
     for i in range(dx):
-        Ax[:, i] = Ax[:, i] / np.linalg.norm(Ax[:, i], ord=2)
+        Ax[:, i] = Ax[:, i] / np.linalg.norm(Ax[:, i], ord=1)
     Ay = np.random.rand(dz, dy)
     for i in range(dy):
-        Ay[:, i] = Ay[:, i] / np.linalg.norm(Ay[:, i], ord=2)
+        Ay[:, i] = Ay[:, i] / np.linalg.norm(Ay[:, i], ord=1)
 
     Axy = np.ones((dx, dy)) * alpha_x
 
