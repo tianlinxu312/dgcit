@@ -145,7 +145,7 @@ def test_statistics(psy_x_i, psy_y_i, phi_x_i, phi_y_i, t_b, std_b, j):
 
 def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000, train_writer=None,
           current_iters=0, nstd=1.0, z_dist='gaussian', x_dims=1, y_dims=1, a_x=0.05, M=500, k=2,
-          var_idx=1, b=30):
+          var_idx=1, b=30, j=1000):
     # generate samples x, y, z
     # arguments: size, sType='CI', dx=1, dy=1, dz=20, nstd=1, fixed_function='linear',
     # debug=False, normalize=True, seed=None, dist_z='gaussian'
@@ -518,8 +518,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
     psy_y_all = tf.reshape(psy_y_all, [k, test_samples, test_size])
     phi_x_all = tf.reshape(phi_x_all, [k, test_samples, test_size])
     phi_y_all = tf.reshape(phi_y_all, [k, test_samples, test_size])
-
-    j = 1000
+    
     t_b = 0.0
     std_b = 0.0
     for n in range(k):
