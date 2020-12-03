@@ -57,6 +57,7 @@ def main():
     m_value = args.m_value
     k_value = args.n_k
     b_value = args.b_b
+    j_value = args.j_j
 
     saved_file = "{}-{}{}-{}-{}".format(model, datetime.now().strftime("%h"), datetime.now().strftime("%d"),
                                         datetime.now().strftime("%H"), datetime.now().strftime("%M"))
@@ -82,7 +83,7 @@ def main():
                     p_value = utils.dgcit(n=sample_size, z_dim=z_dim, simulation=test, batch_size=batch_size,
                                           n_iter=n_iters, train_writer=train_writer, current_iters=test_count * n_test,
                                           nstd=eps_std, z_dist=dist_z, x_dims=dx, y_dims=dy, a_x=alpha_x, M=m_value,
-                                          k=k_value, b=b_value)
+                                          k=k_value, b=b_value, j=j_value)
 
                 elif model == 'gcit':
                     p_value = utils.gcit_sinkhorn(n=sample_size, z_dim=z_dim, simulation=test, statistic="rdc",
@@ -143,7 +144,7 @@ def main():
                         p_value = utils.dgcit(n=sample_size, z_dim=z_dim, simulation=test, batch_size=batch_size,
                                               n_iter=n_iters, train_writer=train_writer,
                                               current_iters=test_count * n_test, nstd=eps_std, z_dist=dist_z,
-                                              x_dims=dx, y_dims=dy, a_x=alpha_x, M=m_value, k=k_value, b=b_value)
+                                              x_dims=dx, y_dims=dy, a_x=alpha_x, M=m_value, k=k_value, b=b_value, j=j_value)
                     elif model == 'gcit':
                         p_value = utils.gcit_sinkhorn(n=sample_size, z_dim=z_dim, simulation=test, statistic="rdc",
                                                       batch_size=batch_size, n_iter=n_iters,
@@ -197,7 +198,7 @@ def main():
         if model == 'dgcit':
             p_value = utils.dgcit(n=sample_size, simulation=test, batch_size=batch_size, n_iter=n_iters,
                                   train_writer=train_writer, nstd=eps_std, z_dist=dist_z, x_dims=dx, y_dims=dy,
-                                  a_x=alpha_x, M=m_value, k=k_value, b=b_value)
+                                  a_x=alpha_x, M=m_value, k=k_value, b=b_value, j=j_value)
             print(p_value)
 
         elif model == 'gcit':
@@ -216,7 +217,7 @@ def main():
             if model == 'dgcit':
                 p_value = utils.dgcit(n=sample_size, simulation=test, batch_size=batch_size, n_iter=n_iters,
                                       train_writer=train_writer, nstd=eps_std, z_dist=dist_z, x_dims=dx,
-                                      y_dims=dy, a_x=alpha_x, M=m_value, k=k_value, var_idx=var, b=b_value)
+                                      y_dims=dy, a_x=alpha_x, M=m_value, k=k_value, var_idx=var, b=b_value, j=j_value)
                 p_vals.append(p_value)
                 print('P value {} for {} dataset {} for current variable number {}'.format(p_value, test, model, var))
 
