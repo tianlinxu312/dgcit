@@ -16,7 +16,7 @@ np.random.seed(42)
 
 parser = argparse.ArgumentParser(description='cit-gan')
 parser.add_argument('-m', '--model', type=str, default='dgcit', choices=['dgcit', 'gcit', 'rcit'])
-parser.add_argument('-t', '--test', type=str, default='power', choices=['type1error', 'power', 'ccle', 'brain'])
+parser.add_argument('-t', '--test', type=str, default='type1error', choices=['type1error', 'power', 'ccle', 'brain'])
 parser.add_argument('-n', '--n_samples', type=int, default=501)
 parser.add_argument('-bs', '--batch_size', type=int, default=64)
 parser.add_argument('-nt', '--n_tests', type=int, default=500) # number of p_values
@@ -30,7 +30,7 @@ parser.add_argument('-ax', '--alpha_x', type=float, default=0.9) # alpha before 
 parser.add_argument('-zs', '--z_scheme', type=int, default=[50])
 parser.add_argument('-mv', '--m_value', type=int, default=100)
 parser.add_argument('-k', '--n_k', type=int, default=3)
-parser.add_argument('-b', '--b_b', type=int, default=100)
+parser.add_argument('-b', '--b_b', type=int, default=10)
 args = parser.parse_args()
 
 
