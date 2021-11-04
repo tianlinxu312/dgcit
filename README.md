@@ -40,7 +40,7 @@ $ python3 train.py \
     --test="power"
     --n_samples=1000
 ```
-For more parameter settings, please see train.py file.  
+For more baseline models and parameter settings, please see train.py file.  
 
 
 ## Illustration of conditional independence testing with double GANs
