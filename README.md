@@ -15,7 +15,8 @@ $ cd dgcit/
 # Create a virtual environment called 'venv'
 $ virtualenv venv 
 $ source venv/bin/activate    # Activate virtual environment
-# install all dependencies
+
+# Install all dependencies
 $ python3 -m pip install -r requirements.txt 
 ```
 
