@@ -1,8 +1,10 @@
 # DGCIT: Double Generative Adversarial Networks for Conditional Independence Testing
 
+Authors: Chengchun Shi, Tianlin Xu, Wicher Bergsma, Lexin Li
+
 This repository contains an implementation and further details of Double Generative Adversarial Networks for Conditional Independence Testing.
 
-Authors: Chengchun Shi, Tianlin Xu, Wicher Bergsma, Lexin Li
+Reference: Shi, C., Xu, T., Bergsma, W. and Li, L. (2021+) Double Generative Adversarial Networks for Conditional Independence Testing. Journal of Machine Learning Research, accepted.
 
 Paper link: https://arxiv.org/pdf/2006.02615.pdf 
 
