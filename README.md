@@ -1,9 +1,5 @@
 # DGCIT: Double Generative Adversarial Networks for Conditional Independence Testing
 
-Authors: Chengchun Shi, Tianlin Xu, Wicher Bergsma, Lexin Li
-
-Abstract: We consider the problem of high-dimensional conditional independence testing, which is a key building block in statistics and machine learning. We propose a double generative adversarial networks (GANs)-based inference procedure. We first introduce a double GANs framework to learn two generators, and integrate the two generators to construct a doubly-robust test statistic. We next consider multiple generalized covariance measures, and take their maximum as our test statistic. Finally, we obtain the empirical distribution of our test statistic through multiplier bootstrap. We show that our test controls type-I error, while the power approaches one asymptotically. More importantly, these theoretical guarantees are obtained under much weaker and practically more feasible conditions compared to existing tests. We demonstrate the efficacy of our test through both synthetic and real datasets.
-
 This repository contains an implementation and further details of Double Generative Adversarial Networks for Conditional Independence Testing.
 
 Reference: Shi, C., Xu, T., Bergsma, W. and Li, L. (2021+) Double Generative Adversarial Networks for Conditional Independence Testing. Journal of Machine Learning Research, accepted.
