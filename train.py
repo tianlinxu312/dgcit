@@ -17,7 +17,7 @@ np.random.seed(42)
 parser = argparse.ArgumentParser(description='cit-gan')
 parser.add_argument('-m', '--model', type=str, default='dgcit', choices=['dgcit', 'gcit', 'rcit'])
 parser.add_argument('-t', '--test', type=str, default='type1error', choices=['type1error', 'power', 'ccle', 'brain'])
-parser.add_argument('-n', '--n_samples', type=int, default=501)
+parser.add_argument('-n', '--n_samples', type=int, default=500)
 parser.add_argument('-bs', '--batch_size', type=int, default=64)
 parser.add_argument('-nt', '--n_tests', type=int, default=500) # number of p_values
 parser.add_argument('-ni', '--n_iters', type=int, default=1000) # number of iterations to train GANs

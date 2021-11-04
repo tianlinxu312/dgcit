@@ -216,77 +216,32 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
     else:
         raise ValueError('Test does not exist.')
 
-    if k == 2:
-        # define training and testing subsets, training for learning the sampler and
-        # testing for computing test statistic. Set 2/3 and 1/3 as default
-        # x_train, y_train, z_train = x[:int(2 * n / 3), ], y[:int(2 * n / 3), ], z[:int(2 * n / 3), ]
-        x_train, y_train, z_train = x[:int(n / 2), ], y[:int(n / 2), ], z[:int(n / 2), ]
-        # build data pipline for test set
-        x_test, y_test, z_test = x[int(n / 2):, ], y[int(n / 2):, ], z[int(n / 2):, ]
-        # build data pipline for training set
-        dataset1 = tf.data.Dataset.from_tensor_slices((x_train, y_train, z_train))
-        testset1 = tf.data.Dataset.from_tensor_slices((x_test, y_test, z_test))
-        dataset2 = tf.data.Dataset.from_tensor_slices((x_test, y_test, z_test))
-        testset2 = tf.data.Dataset.from_tensor_slices((x_train, y_train, z_train))
+    # split the train-test sets to k folds
+    data_k = []
+    idx = n // k
+    epochs = int(n_iter)
 
+    for j in range(k):
+        x_train, y_train, z_train = x[j:(j+1)*idx, ], y[j:(j+1)*idx, ], z[j:(j+1)*idx, ]
+        i = 0
+        while i < k:
+            if not i == j:
+                x1, y1, z1 = x[i * idx:(i + 1) * idx, ], y[i * idx:(i + 1) * idx, ], z[i * idx:(i + 1) * idx, ]
+                x_train = tf.concat([x_train, x1], axis=0)
+                y_train = tf.concat([y_train, y1], axis=0)
+                z_train = tf.concat([z_train, z1], axis=0)
+            i += 1
+
+        dataset = tf.data.Dataset.from_tensor_slices((x_train[idx:, ], y_train[idx:, ],
+                                                      z_train[idx:, ]))
         # Repeat n epochs
-        epochs = int(n_iter)
-        dataset1 = dataset1.repeat(epochs)
-        batched_train1 = dataset1.shuffle(300).batch(batch_size * 2)
-        # batched_training_set1 = dataset1.shuffle(300).batch(batch_size)
-        batched_test1 = testset1.batch(1)
-
-        dataset2 = dataset2.repeat(epochs)
-        batched_train2 = dataset2.shuffle(300).batch(batch_size * 2)
-        batched_test2 = testset2.batch(1)
-        data_k = [[batched_train1, batched_test1], [batched_train2, batched_test2]]
-
-    else:
-        k = 3
-        # Repeat n epochs
-        epochs = int(n_iter)
-        # define training and testing subsets, I1, I2,..., IK for learning the sampler and
-        # testing for computing test statistic.
-        x_1, y_1, z_1 = x[:int(1 * n / k), ], y[:int(1 * n / k), ], z[:int(1 * n / k), ]
-        # build subset I2
-        x_2, y_2, z_2 = x[int(1 * n / k):int(2 * n / k), ], y[int(1 * n / k):int(2 * n / k), ], \
-                        z[int(1 * n / k):int(2 * n / k), ]
-        # build subset I3
-        x_3, y_3, z_3 = x[int(2 * n / k):, ], y[int(2 * n / k):, ], z[int(2 * n / k):, ]
-
-        # build data pipline for training set I1
-        train_x1 = tf.concat([x_1, x_2], axis=0)
-        train_y1 = tf.concat([y_1, y_2], axis=0)
-        train_z1 = tf.concat([z_1, z_2], axis=0)
-        I1_dataset = tf.data.Dataset.from_tensor_slices((train_x1, train_y1, train_z1))
-        # Repeat n epochs
-        I1_training = I1_dataset.repeat(epochs)
-        I1_training = I1_training.shuffle(100).batch(batch_size*2)
+        training = dataset.repeat(epochs)
+        training = training.shuffle(100).batch(batch_size * 2)
         # test-set is the one left
-        I1_test = tf.data.Dataset.from_tensor_slices((x_3, y_3, z_3))
-        I1_test = I1_test.batch(1)
-
-        train_x2 = tf.concat([x_2, x_3], axis=0)
-        train_y2 = tf.concat([y_2, y_3], axis=0)
-        train_z2 = tf.concat([z_2, z_3], axis=0)
-        I2_dataset = tf.data.Dataset.from_tensor_slices((train_x2, train_y2, train_z2))
-        # Repeat n epochs
-        I2_training = I2_dataset.repeat(epochs)
-        I2_training = I2_training.shuffle(100).batch(batch_size*2)
-        I2_test = tf.data.Dataset.from_tensor_slices((x_1, y_1, z_1))
-        I2_test = I2_test.batch(1)
-
-        train_x3 = tf.concat([x_1, x_3], axis=0)
-        train_y3 = tf.concat([y_1, y_3], axis=0)
-        train_z3 = tf.concat([z_1, z_3], axis=0)
-        I3_dataset = tf.data.Dataset.from_tensor_slices((train_x3, train_y3, train_z3))
-        # Repeat n epochs
-        I3_training = I3_dataset.repeat(epochs)
-        I3_training = I3_training.shuffle(100).batch(batch_size*2)
-        I3_test = tf.data.Dataset.from_tensor_slices((x_2, y_2, z_2))
-        I3_test = I3_test.batch(1)
-
-        data_k = [[I1_training, I1_test], [I2_training, I2_test], [I3_training, I3_test]]
+        testing = tf.data.Dataset.from_tensor_slices((x_train[:idx, ], y_train[:idx, ],
+                                                      z_train[:idx, ]))
+        testing = testing.batch(1)
+        data_k.append([training, testing])
 
     # no. of random and hidden dimensions
     if z_dim <= 20:
@@ -296,13 +251,10 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
     else:
         v_dims = int(50)
         h_dims = int(512)
-        # v_dims = 10
-        # h_dims = 128
 
     v_dist = tfp.distributions.Normal(0, scale=tf.sqrt(1.0 / 3.0))
     # create instance of G & D
     lr = 0.0005
-    # input_dims = x_train.shape[1]
     generator_x = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, x_dims, batch_size)
     generator_y = cit_gan.WGanGenerator(n, z_dim, h_dims, v_dims, y_dims, batch_size)
     discriminator_x = cit_gan.WGanDiscriminator(n, z_dim, h_dims, x_dims, batch_size)
