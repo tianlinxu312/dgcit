@@ -52,8 +52,6 @@ Top panels: the empirical type-I error rate of various tests under H0. From left
 normal Z with α = 0.1, normal Z with α = 0.05, Laplacian Z with α = 0.1, and Laplacian Z
 with α = 0.05. Bottom panels: the empirical power of various tests under H1.
 
-The results can be reproduced by running `train.py` with the current settings.  
-
 KCIT results were obtained using this implementation: https://github.com/ericstrobl/RCIT/blob/master/R/KCIT.R
 
 ## Results for the anti-cancer drug example
