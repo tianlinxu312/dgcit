@@ -2,7 +2,38 @@
 
 This repository contains an implementation and further details of Double Generative Adversarial Networks for Conditional Independence Testing.
 
-Paper link to follow. 
+Authors: Chengchun Shi, Tianlin Xu, Wicher Bergsma, Lexin Li
+
+Paper link: https://arxiv.org/pdf/2006.02615.pdf 
+
+## Setup
+
+$ git clone https://github.com/tianlinxu312/dgcit.git
+$ cd dgcit/
+
+#Create a virtual environment called 'venv'
+$ virtualenv venv 
+$ source venv/bin/activate    # Activate virtual environment
+$ python3 -m pip install -r requirements.txt 
+
+## Training 
+For runing experiments to compute Type I error: 
+
+#Compute Type I error for 1000 samples
+$ python3 train.py \
+    --model="dgcit"
+    --test="type1error"
+    --n_samples=1000
+    
+For runing experiments to compute Power:  
+#Compute Power for 1000 samples
+$ python3 train.py \
+    --model="dgcit"
+    --test="power"
+    --n_samples=1000
+
+For more parameter settings, please see train.py file.  
+
 
 ## Illustration of conditional independence testing with double GANs
 <img src="./figs/dgcit.png" width="750" alt="dgct">
