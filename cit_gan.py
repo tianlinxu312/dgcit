@@ -2,25 +2,11 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
 import os
-import time
-import math
 from datetime import datetime
 import logging
-from sklearn.metrics.pairwise import rbf_kernel
-from scipy.stats import ks_2samp
-from scipy.stats import wilcoxon
-import random
-from scipy import stats
-import time
-from collections import defaultdict
-import warnings
-from scipy.stats import rankdata
 
 logging.getLogger('tensorflow').disabled = True
-print("TensorFlow version:", tf.__version__)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 tf.keras.backend.set_floatx('float32')
-total_start_time = time.time()
 tf.random.set_seed(42)
 
 

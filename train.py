@@ -1,9 +1,6 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
-import os
-import time
-import math
 from datetime import datetime
 import utils
 import cit_gan
@@ -30,8 +27,8 @@ parser.add_argument('-ax', '--alpha_x', type=float, default=0.9) # alpha before 
 parser.add_argument('-zs', '--z_scheme', type=int, default=[50])
 parser.add_argument('-mv', '--m_value', type=int, default=100)
 parser.add_argument('-k', '--n_k', type=int, default=3)
-parser.add_argument('-b', '--b_b', type=int, default=100)
-parser.add_argument('-j', '--j_j', type=int, default=1000)
+parser.add_argument('-b', '--b_b', type=int, default=10)
+parser.add_argument('-j', '--j_j', type=int, default=10)
 args = parser.parse_args()
 
 

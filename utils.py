@@ -1,24 +1,8 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
-import os
-import time
-import math
-from datetime import datetime
-import logging
-from sklearn.metrics.pairwise import rbf_kernel
-import matplotlib.pyplot as plt
-from scipy.stats import ks_2samp
-from scipy.stats import wilcoxon
-import random
-from scipy import stats
-from collections import defaultdict
-import warnings
 import cit_gan
-from scipy.stats import rankdata
 import xlwt
-from tempfile import TemporaryFile
-import scipy
 import gan_utils
 import pandas as pd
 import ccle_data
@@ -76,8 +60,6 @@ def generate_samples_random(size=1000, sType='CI', dx=1, dy=1, dz=20, nstd=0.05,
 
     if sType == 'CI':
         X = np.sin(np.matmul(Z, Ax) + nstd * np.random.multivariate_normal(np.zeros(dx), np.eye(dx), num))
-        # X = np.random.multivariate_normal(np.zeros(dx), np.eye(dx), num) + np.matmul(Z, Ax)
-        # X = np.random.uniform(-1.0, 1.0, size=(size, 1))
         Y = np.cos(np.matmul(Z, Ay) + nstd * np.random.multivariate_normal(np.zeros(dy), np.eye(dy), num))
     elif sType == 'I':
         X = np.sin(nstd * np.random.multivariate_normal(np.zeros(dx), np.eye(dx), num))
@@ -746,7 +728,6 @@ def gcit_sinkhorn(n=1000, z_dim=100, simulation='type1error', statistic="rdc", b
 
             loss1 = \
                 gan_utils.benchmark_loss(f_real, f_fake, scaling_coef, sinkhorn_eps, sinkhorn_l, f_real_p, f_fake_p)
-            # disc_loss = - tf.math.minimum(loss1, 1)
             disc_loss = - loss1
         # update discriminator parameters
         d_grads = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
