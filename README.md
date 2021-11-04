@@ -12,7 +12,7 @@ Paper link: https://arxiv.org/pdf/2006.02615.pdf
 $ git clone https://github.com/tianlinxu312/dgcit.git
 $ cd dgcit/
 
-#Create a virtual environment called 'venv'
+# Create a virtual environment called 'venv'
 $ virtualenv venv 
 $ source venv/bin/activate    # Activate virtual environment
 $ python3 -m pip install -r requirements.txt 
@@ -25,7 +25,7 @@ CCLE data used in the paper is downloaded from here: https://github.com/alexisbe
 For runing experiments to compute Type I error: 
 
 ```
-#Compute Type I error for 1000 samples
+# Compute Type I error for 1000 samples
 $ python3 train.py \
     --model="dgcit"
     --test="type1error"
@@ -34,7 +34,7 @@ $ python3 train.py \
 
 For runing experiments to compute Power:  
 ```
-#Compute Power for 1000 samples
+# Compute Power for 1000 samples
 $ python3 train.py \
     --model="dgcit"
     --test="power"
