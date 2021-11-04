@@ -8,6 +8,7 @@ Paper link: https://arxiv.org/pdf/2006.02615.pdf
 
 ## Setup
 
+'''
 $ git clone https://github.com/tianlinxu312/dgcit.git
 $ cd dgcit/
 
@@ -15,6 +16,7 @@ $ cd dgcit/
 $ virtualenv venv 
 $ source venv/bin/activate    # Activate virtual environment
 $ python3 -m pip install -r requirements.txt 
+'''
 
 ## Training 
 For runing experiments to compute Type I error: 
