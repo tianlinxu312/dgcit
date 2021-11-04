@@ -8,7 +8,7 @@ Paper link: https://arxiv.org/pdf/2006.02615.pdf
 
 ## Setup
 
-'''
+```
 $ git clone https://github.com/tianlinxu312/dgcit.git
 $ cd dgcit/
 
@@ -16,24 +16,30 @@ $ cd dgcit/
 $ virtualenv venv 
 $ source venv/bin/activate    # Activate virtual environment
 $ python3 -m pip install -r requirements.txt 
-'''
+```
+
+## Data
+CCLE data used in the paper is downloaded from here: https://github.com/alexisbellot/GCIT/tree/master/CCLE%20Experiments
 
 ## Training 
 For runing experiments to compute Type I error: 
 
+```
 #Compute Type I error for 1000 samples
 $ python3 train.py \
     --model="dgcit"
     --test="type1error"
     --n_samples=1000
-    
+```
+
 For runing experiments to compute Power:  
+```
 #Compute Power for 1000 samples
 $ python3 train.py \
     --model="dgcit"
     --test="power"
     --n_samples=1000
-
+```
 For more parameter settings, please see train.py file.  
 
 
@@ -54,9 +60,5 @@ KCIT results were obtained using this implementation: https://github.com/ericstr
 <img src="./figs/table.png" width="750" alt="tp">
 The variable importance measures of the elastic net(EN) and random forest(RF) models, versus the
 p-values of the GCIT and DGCIT tests for the anti-cancer drug example.
-
-## Dependencies 
-python 3.6 and TensorFlow version 2.x
  
-## Data
-CCLE data used in the paper is downloaded from here: https://github.com/alexisbellot/GCIT/tree/master/CCLE%20Experiments
+
