@@ -1,11 +1,13 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
+from sklearn.metrics.pairwise import rbf_kernel
 import cit_gan
-import xlwt
+from scipy.stats import rankdata, ks_2samp, wilcoxon
 import gan_utils
 import pandas as pd
 import ccle_data
+from sklearn.model_selection import KFold
 tf.random.set_seed(42)
 np.random.seed(42)
 
@@ -184,7 +186,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         all_data = np.delete(all_data, i, axis=0)
         y = np.delete(y, i, axis=0)
         x = all_data[:, var_idx]
-        z = np.delete(all_data, (var_idx), axis=1).astype(np.float64)
+        z = np.delete(all_data, var_idx, axis=1).astype(np.float64)
         z_dim = z.shape[1]
 
         z = (z - z.min()) / (z.max() - z.min())
@@ -197,33 +199,6 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
 
     else:
         raise ValueError('Test does not exist.')
-
-    # split the train-test sets to k folds
-    data_k = []
-    idx = n // k
-    epochs = int(n_iter)
-
-    for j in range(k):
-        x_train, y_train, z_train = x[j:(j+1)*idx, ], y[j:(j+1)*idx, ], z[j:(j+1)*idx, ]
-        i = 0
-        while i < k:
-            if not i == j:
-                x1, y1, z1 = x[i * idx:(i + 1) * idx, ], y[i * idx:(i + 1) * idx, ], z[i * idx:(i + 1) * idx, ]
-                x_train = tf.concat([x_train, x1], axis=0)
-                y_train = tf.concat([y_train, y1], axis=0)
-                z_train = tf.concat([z_train, z1], axis=0)
-            i += 1
-
-        dataset = tf.data.Dataset.from_tensor_slices((x_train[idx:, ], y_train[idx:, ],
-                                                      z_train[idx:, ]))
-        # Repeat n epochs
-        training = dataset.repeat(epochs)
-        training = training.shuffle(100).batch(batch_size * 2)
-        # test-set is the one left
-        testing = tf.data.Dataset.from_tensor_slices((x_train[:idx, ], y_train[:idx, ],
-                                                      z_train[:idx, ]))
-        testing = testing.batch(1)
-        data_k.append([training, testing])
 
     # no. of random and hidden dimensions
     if z_dim <= 20:
@@ -363,15 +338,31 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
     test_samples = b
     test_size = int(n/k)
 
-    for batched_trainingset, batched_testset in data_k:
-        for x_batch, y_batch, z_batch in batched_trainingset.take(n_iter):
+    # split the train-test sets to k folds
+    kf = KFold(n_splits=k, shuffle=True, random_state=42)
+    epochs = int(n_iter)
+
+    for train_idx, test_idx in kf.split(x):
+        x_train, y_train, z_train = x[train_idx], y[train_idx], z[train_idx]
+
+        dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train,
+                                                      z_train))
+        # Repeat n epochs
+        training = dataset.repeat(epochs)
+        training_dataset = training.shuffle(100).batch(batch_size * 2)
+        # test-set is the one left
+        testing_dataset = tf.data.Dataset.from_tensor_slices((x[test_idx], y[test_idx], z[test_idx]))
+
+        for x_batch, y_batch, z_batch in training_dataset.take(n_iter):
             if x_batch.shape[0] != batch_size * 2:
                 continue
-            x_batch1 = x_batch[0:batch_size, ...]
+
+            # seperate the batch into two parts to train two gans
+            x_batch1 = x_batch[:batch_size, ...]
             x_batch2 = x_batch[batch_size:, ...]
-            y_batch1 = y_batch[0:batch_size, ...]
+            y_batch1 = y_batch[:batch_size, ...]
             y_batch2 = y_batch[batch_size:, ...]
-            z_batch1 = z_batch[0:batch_size, ...]
+            z_batch1 = z_batch[:batch_size, ...]
             z_batch2 = z_batch[batch_size:, ...]
 
             noise_v = v_dist.sample([batch_size, v_dims])
@@ -404,7 +395,7 @@ def dgcit(n=500, z_dim=100, simulation='type1error', batch_size=64, n_iter=1000,
         y = []
 
         # the following code generate x_1, ..., x_400 for all B and it takes 61 secs for one test
-        for test_x, test_y, test_z in batched_testset:
+        for test_x, test_y, test_z in testing_dataset:
             tiled_z = tf.tile(test_z, [M, 1])
             noise_v = v_dist.sample([M, v_dims])
             noise_v = tf.cast(noise_v, tf.float64)
@@ -576,6 +567,40 @@ def permute(x):
 # test statistics and GCIT method
 # Paper link: https://arxiv.org/pdf/1907.04068.pdf
 #
+
+
+def mmd_squared(X, Y, gamma=1):
+    X = X.reshape((len(X)), 1)
+    Y = Y.reshape((len(Y)), 1)
+
+    K_XX = rbf_kernel(X, gamma=gamma)
+    K_YY = rbf_kernel(Y, gamma=gamma)
+    K_XY = rbf_kernel(X, Y, gamma=gamma)
+
+    n = K_XX.shape[0]
+    m = K_YY.shape[0]
+
+    mmd_squared = (np.sum(K_XX)-np.trace(K_XX))/(n*(n-1)) + (np.sum(K_YY)-np.trace(K_YY))/(m*(m-1)) - 2 * np.sum(K_XY) / (m * n)
+
+    return mmd_squared
+
+
+def correlation(X, Y):
+    X = X.reshape((len(X)))
+    Y = Y.reshape((len(Y)))
+    return np.abs(np.corrcoef(X, Y)[0, 1])
+
+
+def kolmogorov(X, Y):
+    X = X.reshape((len(X)))
+    Y = Y.reshape((len(Y)))
+    return ks_2samp(X, Y)[0]
+
+
+def wilcox(X, Y):
+    X = X.reshape((len(X)))
+    Y = Y.reshape((len(Y)))
+    return wilcoxon(X, Y)[0]
 
 
 def gcit_sinkhorn(n=1000, z_dim=100, simulation='type1error', statistic="rdc", batch_size=64, nstd=0.5,

@@ -1,28 +1,9 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
-import os
-import time
 import argparse
-import math
-from datetime import datetime
-import logging
-from sklearn.metrics.pairwise import rbf_kernel
-import matplotlib.pyplot as plt
-from scipy.stats import ks_2samp
-from scipy.stats import wilcoxon
-import random
-from scipy import stats
-from collections import defaultdict
-import warnings
 import cit_gan
-from scipy.stats import rankdata
-import xlwt
-from tempfile import TemporaryFile
-import scipy
 import gan_utils
-import pandas as pd
-import ccle_data
 tf.random.set_seed(42)
 np.random.seed(42)
 

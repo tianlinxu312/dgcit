@@ -1,6 +1,4 @@
 # Utilites related to Sinkhorn computations and training for TensorFlow 2.0
-
-import numpy as np
 import tensorflow as tf
 
 

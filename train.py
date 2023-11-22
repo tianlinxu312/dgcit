@@ -1,11 +1,8 @@
 import numpy as np
 import tensorflow as tf
-import tensorflow_probability as tfp
 from datetime import datetime
 import utils
-import cit_gan
-import decimal
-import gan_utils
+import os
 import argparse
 tf.keras.backend.set_floatx('float64')
 tf.random.set_seed(42)
